@@ -42,8 +42,8 @@
           <g v-for="node in nodes" :key="node.index">
             <circle
               :fill="nodeColor(node[nodeTypeKey])"
-              :stroke-width="highlightNodes.indexOf(node.id) == -1? 3:10"
-              :stroke="highlightNodes.indexOf(node.id) == -1? theme.nodeStroke: 'gold' "
+              :stroke-width="highlightNodes.indexOf(node.id) == -1? 3:5"
+              :stroke="highlightNodes.indexOf(node.id) == -1? theme.nodeStroke: 'red' "
               :class="`${node[nodeTypeKey]} ${node.showText?'selected' : ''} node element`"
               :r="nodeSize"
             ></circle>
