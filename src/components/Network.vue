@@ -38,6 +38,7 @@
         </g>
 
         <!-- node and node-text -->
+        
         <g id="node-group">
           <g v-for="node in nodes" :key="node.index" class="image_holder">
             <circle
@@ -45,7 +46,7 @@
               :stroke-width="highlightNodes.indexOf(node.id) == -1? 3:3"
               :stroke="highlightNodes.indexOf(node.id) == -1? theme.nodeStroke: 'red' "
               :class="`${node[nodeTypeKey]} ${node.showText?'selected' : ''} node element 
-              ${searchResults.length > 0 && searchResults.indexOf(node.id) == -1 ? 'no_result':''}`"
+              ${isIncludedInSearchResult(node.id) ? '':'no_result'}`"
               :r="nodeSize"
             ></circle>
             <image
@@ -59,7 +60,7 @@
               style="pointer-events: none;"
             />
             <image
-              v-show="searchResults.indexOf(node.id) != -1 && searchResult[node.id].tesseract"
+              v-show="isIncludedInSearchResult(node.id) && getTesseractResultFromNodeId(node.id)"
               xlink:href="/assets/image.png"
               x="15"
               y="-20"
@@ -69,7 +70,7 @@
               style="pointer-events: none;"
             />
             <image
-              v-show="searchResults.indexOf(node.id) != -1 && searchResult[node.id].caption"
+              v-show="isIncludedInSearchResult(node.id) && getCaptionResultFromNodeId(node.id)"
               xlink:href="/assets/caption.png"
               x="15"
               y="0"
@@ -79,7 +80,7 @@
               style="pointer-events: none;"
             />
             <image
-              v-show="searchResults.indexOf(node.id) != -1 && searchResult[node.id].page_text"
+              v-show="isIncludedInSearchResult(node.id) && getPageTextResultFromNodeId(node.id)"
               xlink:href="/assets/book.png"
               x="15"
               y="20"
@@ -262,16 +263,37 @@ export default {
       this.$nextTick(function() {
         this.initDragTickZoom();
       });
-    }
+    },
   },
   created() {
     this.initData();
   },
   mounted() {
-    console.log(`Résultats de la recherche : ${this.searchResult}`)
     this.initDragTickZoom();
   },
   methods: {
+    isIncludedInSearchResult(nodeId){
+      var included = this.searchResults && this.searchResults.length > 0 && this.searchResults.some(r => r.id == nodeId);
+      return included;
+    },
+    getTesseractResultFromNodeId(nodeId){
+      if (this.searchResults){
+        return this.searchResults.filter(r => r.id == nodeId)[0].tesseract;
+      }
+      return false;
+    },
+    getCaptionResultFromNodeId(nodeId){
+      if (this.searchResults){
+        return this.searchResults.filter(r => r.id == nodeId)[0].caption;
+      }
+      return false;
+    },
+    getPageTextResultFromNodeId(nodeId){
+      if (this.searchResults){
+        return this.searchResults.filter(r => r.id == nodeId)[0].page_text;
+      }
+      return false;
+    },
     initData() {
       this.force = d3
         .forceSimulation(this.nodes)
