@@ -46,7 +46,7 @@
               :stroke-width="highlightNodes.indexOf(node.id) == -1? 3:3"
               :stroke="highlightNodes.indexOf(node.id) == -1? theme.nodeStroke: 'red' "
               :class="`${node[nodeTypeKey]} ${node.showText?'selected' : ''} node element 
-              ${isIncludedInSearchResult(node.id) ? '':'no_result'}`"
+              ${isIncludedInSearchResult(node.id) || !searchResults || searchResults.length == 0 ? '':'no_result'}`"
               :r="nodeSize"
             ></circle>
             <image
@@ -179,7 +179,7 @@ export default {
      * id: nodeId,
      * tesseract: boolean, => true if the result is found in tesseract
      * caption: boolean,
-     * page_text: boolean
+     * pageText: boolean
      * }
      * 
      */
@@ -273,8 +273,7 @@ export default {
   },
   methods: {
     isIncludedInSearchResult(nodeId){
-      var included = this.searchResults && this.searchResults.length > 0 && this.searchResults.some(r => r.id == nodeId);
-      return included;
+      return this.searchResults && this.searchResults.length > 0 && this.searchResults.some(r => r.id == nodeId);
     },
     getTesseractResultFromNodeId(nodeId){
       if (this.searchResults){
@@ -290,7 +289,7 @@ export default {
     },
     getPageTextResultFromNodeId(nodeId){
       if (this.searchResults){
-        return this.searchResults.filter(r => r.id == nodeId)[0].page_text;
+        return this.searchResults.filter(r => r.id == nodeId)[0].pageText;
       }
       return false;
     },
