@@ -139,6 +139,12 @@ props: {
       default: () => {
         return [];
       }
+    },
+    searchResults: {
+      type: Array,
+      default: () => {
+        return [];
+      }
     }
 }
 
@@ -152,6 +158,7 @@ props: {
 
   - :star: **id**: Number or String. Node id and also node name (can be changed by **nodeTextKey**)
   - **group**: Number or String. like node type (can be changed by **nodeTypeKey**)
+  - :star: **image_path** String. The image path corresponding to the node, it will be displayed when hovering on this node.
 
 - :star: **linkList**: Array of **Link Object** which has
 
@@ -212,7 +219,16 @@ props: {
 
 - **highlightNodes**: Array of node id. Stroke of nodes turn yellow.
 
-  
+- **searchResults** : Array of node id and three boolean. They represent nodes that match a specific research made by the user
+and the location of where the result words are located. 
+```js
+searchResults: {[
+  id : Number,
+  tessearct: Boolean,
+  caption: Boolean,
+  page_text: Boolean
+]}
+```  
 
 ## Events
 
