@@ -47,16 +47,17 @@
               :class="`${node[nodeTypeKey]} ${node.showText?'selected' : ''} node element`"
               :r="nodeSize"
             ></circle>
-            <text
+            <image
               v-show="node.showText"
-              :dx="nodeSize + 5"
-              dy="0"
-              class="node-text"
-              :fill="theme.textFill"
-              :font-size="nodeTextFontSize"
-            >{{node[nodeTextKey]}}</text>
+              :xlink:href="node.image_path"
+              x="-15"
+              y="-15"
+              width="32"
+              height="32"
+              class="image"
+              style="pointer-events: none;"
+            />
           </g>
-          <g></g>
         </g>
       </g>
     </svg>
@@ -66,18 +67,6 @@
 
 <script>
 import * as d3 from "d3";
-// import * as d3Force from 'd3-force'
-// import * as d3Zoom from 'd3-zoom'
-// import * as d3Scale from 'd3-scale'
-// import * as d3Selection from 'd3-selection'
-// import * as d3Drag from 'd3-drag'
-// import * as d3ScaleChromatic from 'd3-scale-chromatic'
-
-// import d3SelectionMulti from "d3-selection-multi";
-
-// const d3 = Object.assign({}, d3Force, d3Zoom, d3Scale, d3Selection, d3Drag)
-
-// 元素的 classList 是 DOMTokenList
 DOMTokenList.prototype.indexOf = Array.prototype.indexOf;
 
 export default {
@@ -224,9 +213,6 @@ export default {
     nodes: function() {
       this.initData();
       this.$nextTick(function() {
-        // 以下这个函数重新在 node 上调用了拖拽
-        // 只有在 mounted 后才有用
-        // 所以要使用 $nextTick
         this.initDragTickZoom();
       });
     }
@@ -254,8 +240,6 @@ export default {
           d3.forceCenter(this.svgSize.width / 2, this.svgSize.height / 2)
         );
 
-      // console.log(this.nodes);
-      // console.log(this.links);
     },
     initDragTickZoom() {
       // 给节点添加拖拽
@@ -271,8 +255,10 @@ export default {
         // 更新节点坐标
         d3.selectAll(".node")
           .data(this.nodes)
-          .attr("cx", d => d.x)
-          .attr("cy", d => d.y);
+          .attr("transform", d => `translate(${d.x},${d.y})`)
+        d3.selectAll(".image")
+          .data(this.nodes)
+          .attr("transform", d => `translate(${d.x},${d.y})`)
         // 更新文字坐标
         d3.selectAll(".node-text")
           .data(this.nodes)
@@ -446,10 +432,6 @@ export default {
 </script>
 
 <style scoped>
-svg {
-  /* border-radius: 5px; */
-}
-
 .element {
   transition: opacity 0.5s ease;
 }
