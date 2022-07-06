@@ -39,12 +39,13 @@
 
         <!-- node and node-text -->
         <g id="node-group">
-          <g v-for="node in nodes" :key="node.index">
+          <g v-for="node in nodes" :key="node.index" class="image_holder">
             <circle
               :fill="nodeColor(node[nodeTypeKey])"
               :stroke-width="highlightNodes.indexOf(node.id) == -1? 3:3"
               :stroke="highlightNodes.indexOf(node.id) == -1? theme.nodeStroke: 'red' "
-              :class="`${node[nodeTypeKey]} ${node.showText?'selected' : ''} node element`"
+              :class="`${node[nodeTypeKey]} ${node.showText?'selected' : ''} node element 
+              ${searchResults.length > 0 && searchResults.indexOf(node.id) == -1 ? 'no_result':''}`"
               :r="nodeSize"
             ></circle>
             <image
@@ -55,6 +56,36 @@
               width="32"
               height="32"
               class="image"
+              style="pointer-events: none;"
+            />
+            <image
+              v-show="searchResults.indexOf(node.id) != -1 && searchResult[node.id].tesseract"
+              xlink:href="/assets/image.png"
+              x="15"
+              y="-20"
+              width="15"
+              height="15"
+              class="tesseract"
+              style="pointer-events: none;"
+            />
+            <image
+              v-show="searchResults.indexOf(node.id) != -1 && searchResult[node.id].caption"
+              xlink:href="/assets/caption.png"
+              x="15"
+              y="0"
+              width="15"
+              height="15"
+              class="caption"
+              style="pointer-events: none;"
+            />
+            <image
+              v-show="searchResults.indexOf(node.id) != -1 && searchResult[node.id].page_text"
+              xlink:href="/assets/book.png"
+              x="15"
+              y="20"
+              width="15"
+              height="15"
+              class="page_text"
               style="pointer-events: none;"
             />
           </g>
@@ -140,6 +171,22 @@ export default {
       default: () => {
         return [];
       }
+    },
+    /**
+     * Used to determinate which nodes are of type searchResult. The elements in this array must be of type :
+     * {
+     * id: nodeId,
+     * tesseract: boolean, => true if the result is found in tesseract
+     * caption: boolean,
+     * page_text: boolean
+     * }
+     * 
+     */
+    searchResults: {
+      type: Array,
+      default: () => {
+        return [];
+      }
     }
   },
   data() {
@@ -221,6 +268,7 @@ export default {
     this.initData();
   },
   mounted() {
+    console.log(`Résultats de la recherche : ${this.searchResult}`)
     this.initDragTickZoom();
   },
   methods: {
@@ -257,6 +305,15 @@ export default {
           .data(this.nodes)
           .attr("transform", d => `translate(${d.x},${d.y})`)
         d3.selectAll(".image")
+          .data(this.nodes)
+          .attr("transform", d => `translate(${d.x},${d.y})`)
+        d3.selectAll(".tesseract")
+          .data(this.nodes)
+          .attr("transform", d => `translate(${d.x},${d.y})`)
+        d3.selectAll(".caption")
+          .data(this.nodes)
+          .attr("transform", d => `translate(${d.x},${d.y})`)
+        d3.selectAll(".page_text")
           .data(this.nodes)
           .attr("transform", d => `translate(${d.x},${d.y})`)
         // 更新文字坐标
@@ -449,6 +506,9 @@ export default {
   border-radius: 10px;
   color: white;
   padding: 10px;
+}
+.no_result {
+  opacity: 0.2 !important;
 }
 </style>
 
